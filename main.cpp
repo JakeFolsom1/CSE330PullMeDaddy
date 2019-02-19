@@ -32,10 +32,10 @@ int main(int argc, char* argv[]) {
 		cout << patt;
 	}
 	*/
-	//#pragma omp parrallel for schedule(dynamic) private(j) shared(argc) num_threads(argc-1)
+	#pragma omp parallel for schedule(dynamic) private(j) shared(argc) num_threads(argc-1)
 
 	for (j = 2; j < argc; j++) // For each file, run my logic
-	{
+	{   
 		vector<size_t> positions; // holds all the positions that pattern occurs within str
 		int matched = 0;
 		int i = 0;
