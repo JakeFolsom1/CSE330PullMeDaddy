@@ -22,25 +22,25 @@ int main(int argc, char* argv[]) {
 		pattern.erase(0, pos + checkForPlus.length());
 		n++;
 	}
-	patterns[n] = pattern; //I have o idea what is happening in my code
+	patterns[n] = pattern; //I have no idea what is happening in my code
 	string patt = "";
 	/*
 	if (pattern.find('*', 0)) { //Find a star operator in the input
-		int patternIndex = pattern.find('*', 0);
-		patt = pattern.substr(0, patternIndex);
-		isKleeneStar = true;
-		cout << patt;
+	int patternIndex = pattern.find('*', 0);
+	patt = pattern.substr(0, patternIndex);
+	isKleeneStar = true;
+	cout << patt;
 	}
 	*/
-	#pragma omp parallel for schedule(dynamic) private(j) shared(argc) num_threads(argc-1)
+#pragma omp parallel for schedule(dynamic) private(j) shared(argc) num_threads(argc-1)
 
 	for (j = 2; j < argc; j++) // For each file, run my logic
-	{   
+	{
 		vector<size_t> positions; // holds all the positions that pattern occurs within str
 		int matched = 0;
 		int i = 0;
 		string input = "";
-		ifstream inFile;			
+		ifstream inFile;
 		inFile.open(argv[j]);
 		int lineNo = 0;
 		while (getline(inFile, input))
@@ -57,14 +57,17 @@ int main(int argc, char* argv[]) {
 				}
 
 				while (matched != 0)
-				{
-					cout << argv[j] << ", "; 
-					cout << lineNo + 1 << ", ";
-					cout << positions[i] + 1 << ", ";
-					cout << positions[i] + pattern.length() << ":";
-					cout << " " << pattern << endl;
-					matched--;
-					i++;
+				{	
+					#pragma omp critical 
+					{
+						cout << argv[j] << ", ";
+						cout << lineNo + 1 << ", ";
+						cout << positions[i] + 1 << ", ";
+						cout << positions[i] + pattern.length() << ":";
+						cout << " " << pattern << endl;
+						matched--;
+						i++;
+					}
 				}
 			}
 			lineNo++;
@@ -72,4 +75,4 @@ int main(int argc, char* argv[]) {
 		inFile.close();
 	}
 	printf("Time taken: %.2fs\n", (double)(clock() - timer) / CLOCKS_PER_SEC);
-} 
+}
